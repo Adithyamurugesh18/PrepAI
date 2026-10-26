@@ -1,0 +1,19 @@
+# Environment secrets
+.env
+.env.*
+!.env.example
+
+# Python virtual environment and cache
+venv/
+.venv/
+__pycache__/
+.pytest_cache/
+*.py[cod]
+
+# Local databases and generated vector store
+*.db
+chroma_db/
+
+# Local development files
+.vscode/
+.idea/
