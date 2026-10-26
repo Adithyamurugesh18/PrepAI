@@ -1,7 +1,11 @@
 from types import SimpleNamespace
 from unittest.mock import MagicMock, patch
+import sys
 
 from fastapi.testclient import TestClient
+
+with patch("chromadb.PersistentClient") as mock_client:
+    mock_client.return_value.get_collection.return_value = MagicMock()
 
 from backend.api.api import app
 from backend.auth.security import get_current_user
