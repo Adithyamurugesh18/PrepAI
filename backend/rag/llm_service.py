@@ -1,25 +1,31 @@
+
 import os
 from pathlib import Path
+from functools import lru_cache
+
 from dotenv import load_dotenv
 from google import genai
 
-# Load .env from project root
+
+# Load .env from the project root.
 BASE_DIR = Path(__file__).resolve().parents[2]
 load_dotenv(BASE_DIR / ".env")
 
-api_key = os.getenv("GEMINI_API_KEY")
 
-if not api_key:
-    raise ValueError("GEMINI_API_KEY was not loaded from .env")
+@lru_cache(maxsize=1)
+def get_gemini_client():
+    """Create the Gemini client only when an answer is requested."""
+    api_key = os.getenv("GEMINI_API_KEY")
 
-print("API key loaded:", True)
+    if not api_key:
+        raise ValueError(
+            "GEMINI_API_KEY is missing. Add it to the project-root .env file."
+        )
 
-# Create Gemini client
-client = genai.Client(api_key=api_key)
+    return genai.Client(api_key=api_key)
 
 
 def generate_answer(question, context):
-
     prompt = f"""
 You are PrepAI, an AI Interview Preparation Assistant.
 
@@ -46,6 +52,8 @@ USER QUESTION:
 ANSWER:
 """
 
+    client = get_gemini_client()
+
     response = client.models.generate_content(
         model="gemini-3.6-flash",
         contents=prompt
@@ -55,7 +63,6 @@ ANSWER:
 
 
 if __name__ == "__main__":
-
     question = input("Enter your question: ")
 
     context = """
